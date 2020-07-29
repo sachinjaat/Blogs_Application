@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./styles.css";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Home from "./Home";
+import About from "./About";
+import Contact from "./Contact";
+import Compose from "./Compose";
+import PerticularPost from './perticularPost';
 
-function App() {
+export default function App() {
+  const [Blogs, setBlogs] = useState(() => {
+    const localData = localStorage.getItem("blogs");
+    return localData ? JSON.parse(localData) : [];
+  });
+
+  function Addblog(newBlog) {
+    setBlogs(prevBlogs => {
+      return [...prevBlogs, newBlog];
+    });
+  }
+  useEffect(() => {
+    localStorage.setItem("blogs", JSON.stringify(Blogs));
+  }, [Blogs]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Switch>
+          <Route path="/" exact component={() => <Home blogs={Blogs} />} />
+          <Route path="/about" component={About} />
+          <Route path="/contact" component={Contact} />
+          <Route
+            path="/compose"
+            component={() => <Compose onAdd={Addblog} />}
+          />
+          <Route path="/perticularpost" component={PerticularPost} />
+        </Switch>
+      </div>
+    </Router>
   );
 }
-
-export default App;
